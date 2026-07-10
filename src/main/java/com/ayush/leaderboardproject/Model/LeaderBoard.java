@@ -32,8 +32,28 @@ public class LeaderBoard {
     private int solved;
 
     @Column(nullable = false)
-    private double rating;
+    private int score;
 
     @Column(nullable = false)
-    private int score;
+    private int easySolved;
+
+    @Column(nullable = false)
+    private int mediumSolved;
+
+    @Column(nullable = false)
+    private int hardSolved;
+
+    @Column(nullable = false)
+    private int prevEasySolved;
+
+    @Column(nullable = false)
+    private int prevMediumSolved;
+
+    @Column(nullable = false)
+    private int prevHardSolved;
+
+    @Column(nullable = false)
+    private int dailyUnique;
+
+
 }
