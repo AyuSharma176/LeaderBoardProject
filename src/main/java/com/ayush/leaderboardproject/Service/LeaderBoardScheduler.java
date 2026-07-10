@@ -13,27 +13,38 @@ import java.util.List;
 public class LeaderBoardScheduler {
     private final LeaderBoardRepository leaderBoardRepository;
     private final LeaderBoardService leaderBoardService;
-
-    public LeaderBoardScheduler(LeaderBoardRepository leaderBoardRepository, LeaderBoardService leaderBoardService) {
+    private final ProfileService profileService;
+    public LeaderBoardScheduler(LeaderBoardRepository leaderBoardRepository, LeaderBoardService leaderBoardService, ProfileService profileService) {
         this.leaderBoardRepository = leaderBoardRepository;
         this.leaderBoardService = leaderBoardService;
+        this.profileService = profileService;
     }
 
     @Scheduled(cron = "${leaderboard.refresh.cron}")
-    public void refreshAllStats(){
-        System.out.println("Refreshing all stats...");
+    public void refreshAllStats() {
+        System.out.println("Starting scheduled leaderboard refresh...");
+
         List<LeaderBoard> allEntries = leaderBoardRepository.findAll();
 
-        for(LeaderBoard entry: allEntries){
+        for (LeaderBoard entry : allEntries) {
             try {
                 leaderBoardService.refreshEntry(entry.getLeetcodeUsername());
-                System.out.println("Refreshed stats for user: " + entry.getLeetcodeUsername());
+
+                // Record today's daily unique as activity
+                if (entry.getUser() != null) {
+                    profileService.recordDailyActivity(
+                            entry.getUser(),
+                            entry.getDailyUnique()
+                    );
+                }
+                System.out.println("Refreshed: " + entry.getLeetcodeUsername());
             } catch (Exception e) {
                 System.err.println("Failed to refresh " +
                         entry.getLeetcodeUsername() + ": " + e.getMessage());
             }
         }
-        System.out.println("Finished refreshing all stats.");
+
+        System.out.println("Scheduled leaderboard refresh complete.");
     }
 
     @PostMapping("/refresh-all")

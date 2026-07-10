@@ -30,4 +30,16 @@ public class User {
 
     @Column(nullable = false)
     private String role;
+
+    @Column
+    private String profilePicture;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int currentStreak;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int longestStreak;
+
+    @Column
+    private java.time.LocalDate lastCompletedDate;
 }
