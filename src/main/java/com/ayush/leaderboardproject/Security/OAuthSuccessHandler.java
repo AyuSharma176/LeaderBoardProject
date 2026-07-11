@@ -5,6 +5,7 @@ import com.ayush.leaderboardproject.Repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -17,7 +18,8 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
-
+    @Value("${FRONTEND_URL}")
+    private String frontendUrl;
     public OAuthSuccessHandler(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
@@ -37,9 +39,9 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
 
         if (existingUser != null) {
             String token = jwtUtil.generateToken(existingUser.getUsername());
-            response.sendRedirect("http://localhost:5173/?token=" + token);
+            response.sendRedirect(frontendUrl + "/?token=" + token);
         } else {
-            response.sendRedirect("http://localhost:5173/?email=" + email + "&name=" + name);
+            response.sendRedirect(frontendUrl + "/?email=" + email + "&name=" + name);
         }
     }
 }
